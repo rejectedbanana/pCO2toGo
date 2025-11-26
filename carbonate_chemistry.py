@@ -19,42 +19,32 @@ def manipulator(
         Src_TCO2: float, 
         Trgt_Alk: float, 
         Trgt_TCO2: float,
-        CRgt_Alk: float, 
-        Argt_HCL: float,
+        CRgt_Alk: float,
         CRgt_TCO2: float, 
-        source_TCO2: float, 
-        Buffered_volume: float, 
-        Argt_vol: float, 
-        Crgt_vol: float
+        Argt_HCL: float,
+        Buffered_volume: float
 ) -> Dict[str, float]:
     """
     Calculate carbonate chemistry parameters from pCO2 and TCO2/DIC.
     
     Args:
-        Src_Alk:  
-        Src_TCO2:  
-        Trgt_Alk:  
-        Trgt_TCO2: 
-        CRgt_Alk:  
-        Argt_HCL: 
-        CRgt_TCO2:  
-        source_TCO2:  
+        Src_Alk:  Source Alkalinity
+        Src_TCO2:  Source TCO2/DIC
+        Trgt_Alk:  Target Alkalinity
+        Trgt_TCO2: Target TCO2/DIC
+        CRgt_Alk: Carbonate Reagent alkalinity
+        CRgt_TCO2: Carbonate Reagent DIC
+        Argt_HCL: Acid Reagent Concentration
         Buffered_volume:  
-        Argt_vol:  
-        Crgt_vol: 
         
     Returns:
-        Dictionary containing:
-        - chk_tgt_TCO2: 
-        - CrgtVol: 
-        - ArgtVol: 
+        Dictionary containing: 
+        - CrgtVol: Volume of carbonate reagent to add
+        - ArgtVol: Volume of acid reagent to add
         
     Raises:
         ValueError: If the polynomial solver fails to find valid roots
     """
-    
-    # Check the 
-    chk_tgt_TCO2 = source_TCO2*Buffered_volume + CRgt_TCO2*Crgt_vol
 
     # Calculate some of the variables
     gamma = (Src_TCO2-Trgt_TCO2)/(Trgt_TCO2-CRgt_TCO2)
@@ -71,7 +61,6 @@ def manipulator(
     CrgtVol = gamma*Buffered_volume + 16*alpha*FAnum/FAden
 
     return {
-        'chk_tgt_TCO2': chk_tgt_TCO2,
         'CrgtVol': CrgtVol,
         'ArgtVol': ArgtVol
     }
@@ -91,20 +80,20 @@ def calculate_carbonate_chemistry_pCO2_tCO2(
     Args:
         temperature: Temperature in degrees Celsius
         salinity: Salinity in PSU
-        pCO2: Partial pressure of CO2 in microatm (150-750 range)
-        tCO2: Total dissolved inorganic carbon in umol/L (20-5000 range)
+        pCO2: Partial pressure of CO2 in microatm
+        tCO2: Total dissolved inorganic carbon in umol/kg
         
     Returns:
         Dictionary containing:
-        - CO3: Carbonate ion concentration (umol/L)
-        - HCO3: Bicarbonate ion concentration (umol/L) 
-        - CO2aq: Aqueous CO2 concentration (umol/L)
-        - pCO2: Partial pressure of CO2 in microatm (150-750 range)
-        - pH: pH (unitless, 7.5-8.5 range)
-        - Omega_aragonite: Aragonite saturation state (1.1-4.2 range)
-        - Omega_calcite: Calcite saturation state
-        - alkalinity: Total alkalinity (umol/L)
-        - tCO2: Total dissolved inorganic carbon in umol/L (20-5000 range)
+        - CO3: Carbonate ion concentration in umol/kg
+        - HCO3: Bicarbonate ion concentration in umol/kg
+        - CO2aq: Aqueous CO2 concentration in umol/kg
+        - pCO2: Partial pressure of CO2 in microatm 
+        - pH: pH (dimensionless)
+        - Omega_aragonite: Aragonite saturation state (dimensionless)
+        - Omega_calcite: Calcite saturation state (dimensionless)
+        - alkalinity: Total alkalinity in umol/kg
+        - tCO2: Total dissolved inorganic carbon in umol/kg
         
     Raises:
         ValueError: If the polynomial solver fails to find valid roots
@@ -204,20 +193,20 @@ def calculate_carbonate_chemistry_pCO2_alkalinity(
     Args:
         temperature: Temperature in degrees Celsius
         salinity: Salinity in PSU
-        pCO2: Partial pressure of CO2 in microatm (150-750 range)
-        Alkalinity: Total alkalinity (umol/L)
+        pCO2: Partial pressure of CO2 in microatm
+        Alkalinity: Total alkalinity in umol/kg
         
     Returns:
         Dictionary containing:
-        - CO3: Carbonate ion concentration (umol/L)
-        - HCO3: Bicarbonate ion concentration (umol/L) 
-        - CO2aq: Aqueous CO2 concentration (umol/L)
-        - pCO2: Partial pressure of CO2 in microatm (150-750 range)
-        - pH: pH (unitless, 7.5-8.5 range)
-        - Omega_aragonite: Aragonite saturation state (1.1-4.2 range)
-        - Omega_calcite: Calcite saturation state
-        - alkalinity: Total alkalinity (umol/L)
-        - tCO2: Total dissolved inorganic carbon in umol/L (20-5000 range)
+        - CO3: Carbonate ion concentration in umol/kg
+        - HCO3: Bicarbonate ion concentration in umol/kg
+        - CO2aq: Aqueous CO2 concentration in umol/kg
+        - pCO2: Partial pressure of CO2 in microatm 
+        - pH: pH (dimensionless)
+        - Omega_aragonite: Aragonite saturation state (dimensionless)
+        - Omega_calcite: Calcite saturation state (dimensionless)
+        - alkalinity: Total alkalinity in umol/kg
+        - tCO2: Total dissolved inorganic carbon in umol/kg
         
     Raises:
         ValueError: If the polynomial solver fails to find valid roots
@@ -324,20 +313,20 @@ def calculate_carbonate_chemistry_pCO2_OmegaA(
     Args:
         temperature: Temperature in degrees Celsius
         salinity: Salinity in PSU
-        pCO2: Partial pressure of CO2 in microatm (150-750 range)
-        Omega_aragonite: Aragonite saturation state
+        pCO2: Partial pressure of CO2 in microatm
+        Omega_aragonite: Aragonite saturation state (dimensionless))
         
     Returns:
         Dictionary containing:
-        - CO3: Carbonate ion concentration (umol/L)
-        - HCO3: Bicarbonate ion concentration (umol/L) 
-        - CO2aq: Aqueous CO2 concentration (umol/L)
-        - pCO2: Partial pressure of CO2 in microatm (150-750 range)
-        - pH: pH (unitless, 7.5-8.5 range)
-        - Omega_aragonite: Aragonite saturation state (1.1-4.2 range)
-        - Omega_calcite: Calcite saturation state
-        - alkalinity: Total alkalinity (umol/L)
-        - tCO2: Total dissolved inorganic carbon in umol/L (20-5000 range)
+        - CO3: Carbonate ion concentration in umol/kg
+        - HCO3: Bicarbonate ion concentration in umol/kg
+        - CO2aq: Aqueous CO2 concentration in umol/kg
+        - pCO2: Partial pressure of CO2 in microatm 
+        - pH: pH (dimensionless)
+        - Omega_aragonite: Aragonite saturation state (dimensionless)
+        - Omega_calcite: Calcite saturation state (dimensionless)
+        - alkalinity: Total alkalinity in umol/kg
+        - tCO2: Total dissolved inorganic carbon in umol/kg
         
     Raises:
         ValueError: If the polynomial solver fails to find valid roots
@@ -392,15 +381,15 @@ def calculate_carbonate_chemistry_pCO2_OmegaA(
 
 def print_calculation_summary( result: Dict[str, float] ):
     # print(f"*** {calculation_pair} SUMMARY ***")
-    print(f"CO3 = {result["CO3"]}")
-    print(f"HCO3 = {result["HCO3"]}")
-    print(f"CO2aq = {result["CO2aq"]}")
-    print(f"pCO2 = {result["pCO2"]}")
-    print(f"pH = {result["pH"]}")
-    print(f"Omega A = {result["Omega_aragonite"]}")
-    print(f"Omega C = {result["Omega_calcite"]}")
-    print(f"Alkalinity = {result["alkalinity"]}")
-    print(f"tCO2 = {result["tCO2"]}")
+    print(f"CO3 = {result["CO3"]:0.0f} [umol/kg]")
+    print(f"HCO3 = {result["HCO3"]:0.0f} [umol/kg]")
+    print(f"CO2aq = {result["CO2aq"]:0.0f} [umol/kg]")
+    print(f"pCO2 = {result["pCO2"]:0.0f} [uatm]")
+    print(f"pH = {result["pH"]:0.1f}")
+    print(f"Omega A = {result["Omega_aragonite"]:0.1f}")
+    print(f"Omega C = {result["Omega_calcite"]:0.1f}")
+    print(f"Alkalinity = {result["alkalinity"]:0.0f} [umol/kg]")
+    print(f"tCO2 = {result["tCO2"]:0.0f} [umol/kg]")
 
 
 # ****** CALCULATE THERMODYNAMIC CONSTANTS ******
@@ -659,10 +648,8 @@ def calculate_calcium(salinity: float) -> float:
         salinity: Salinity in PSU (Practical Salinity Units)
         
     Returns:
-        Calcium concentration in mmol/kg
+        Calcium concentration in umol/kg
         
-    Note:
-        This is a preliminary calculation. Reference needed for verification.
     """
     return salinity * (10.5 - 1.0) / 35 + 1
 
@@ -677,81 +664,9 @@ def calculate_total_boron(salinity: float) -> float:
     Returns:
         Total boron concentration in umol/kg
         
-    Note:
-        This is a preliminary calculation. Reference needed for verification.
     """
     return salinity * 12.12
 
 
 
-
-
-
-    
-
-# def calculate_alkalinity(temperature: float, salinity: float, pco2: float, tco2: float) -> float:
-#     """
-#     Calculate alkalinity from pCO2 and TCO2/DIC.
-    
-#     Args:
-#         temperature: Temperature in degrees Celsius
-#         salinity: Salinity in PSU
-#         pco2: Partial pressure of CO2 in microatm
-#         tco2: Total dissolved inorganic carbon in umol/L
-        
-#     Returns:
-#         Alkalinity in umol/L
-#     """
-#     result = calculate_carbonate_chemistry_pco2_tco2(temperature, salinity, pco2, tco2)
-#     return result['alkalinity']
-
-
-# def calculate_ph(temperature: float, salinity: float, pco2: float, tco2: float) -> float:
-#     """
-#     Calculate pH from pCO2 and TCO2/DIC.
-    
-#     Args:
-#         temperature: Temperature in degrees Celsius
-#         salinity: Salinity in PSU
-#         pco2: Partial pressure of CO2 in microatm
-#         tco2: Total dissolved inorganic carbon in umol/L
-        
-#     Returns:
-#         pH (unitless)
-#     """
-#     result = calculate_carbonate_chemistry_pco2_tco2(temperature, salinity, pco2, tco2)
-#     return result['ph']
-
-
-# def calculate_omega_aragonite(temperature: float, salinity: float, pco2: float, tco2: float) -> float:
-#     """
-#     Calculate aragonite saturation state from pCO2 and TCO2/DIC.
-    
-#     Args:
-#         temperature: Temperature in degrees Celsius
-#         salinity: Salinity in PSU
-#         pco2: Partial pressure of CO2 in microatm
-#         tco2: Total dissolved inorganic carbon in umol/L
-        
-#     Returns:
-#         Aragonite saturation state (unitless)
-#     """
-#     result = calculate_carbonate_chemistry_pco2_tco2(temperature, salinity, pco2, tco2)
-#     return result['omega_aragonite']
-
-
-# def calculate_omega_calcite(temperature: float, salinity: float, pco2: float, tco2: float) -> float:
-#     """
-#     Calculate calcite saturation state from pCO2 and TCO2/DIC.
-    
-#     Args:
-#         temperature: Temperature in degrees Celsius
-#         salinity: Salinity in PSU
-#         pco2: Partial pressure of CO2 in microatm
-#         tco2: Total dissolved inorganic carbon in umol/L
-        
-#     Returns:
-#         Calcite saturation state (unitless)
-#     """
-#     result = calculate_carbonate_chemistry_pco2_tco2(temperature, salinity, pco2, tco2)
-#     return result['omega_calcite']
+# End of carbonate_chemistry.py module
