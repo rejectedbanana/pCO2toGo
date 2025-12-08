@@ -1,25 +1,12 @@
 import streamlit as st
 import carbonate_chemistry as cc
 
-# Custom CSS to make sidebar wider
-st.markdown(
-    """
-    <style>
-    [data-testid="stSidebar"][aria-expanded="true"]{
-        min-width: 450px;
-        max-width: 450px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 # Set up the Streamlit app
 st.title("pCO\u2082 to Go Calculator")
 st.markdown(
     """
     This application calculates the required reagent to achieve a target 
-    state based on user-defined input parameters.
+    state based on the initial state of the water in the tank.
     """
 )
 
@@ -121,7 +108,7 @@ elif input_type == "pCO2 and pH":
 # *** TARGET WATER *****
 # Input the target parameters
 # This is Omega Aragonite or pH
-st.sidebar.markdown("# :orange[Target State]")
+st.sidebar.markdown("# :orange[Target Properties]")
 # Select calculation type
 st.sidebar.markdown("### Select the measurement pair for the target water")
 # Select calculation type
@@ -263,7 +250,7 @@ reagents = cc.manipulator(
 
 # Display the starting water summary
 st.subheader(":blue[Starting Water Property Summary]")
-st.markdown("Calculated properties of the starting water:")
+st.markdown("Properties of the starting water before adding reagents:")
 
 starting_summary =  {
     "pCO2": [f"{source['pCO2']:.0f} µatm"],
@@ -275,8 +262,8 @@ starting_summary =  {
 st.dataframe(starting_summary, hide_index=True)
 
 # Display the target water summary
-st.subheader(":orange[Target State Summary]")
-st.markdown("Calculated properties of the final water after reagent addition:")
+st.subheader(":orange[Target Water Property Summary]")
+st.markdown("Properties of the target water after adding reagents:")
 target_summary =  {
     "pCO2": [f"{target['pCO2']:.0f} µatm"],
     "pH": [f"{target['pH']:.1f}"],
@@ -287,7 +274,7 @@ target_summary =  {
 st.dataframe(target_summary, hide_index=True)
 
 # Display reagent volumes
-st.markdown("Calculated Reagent Volumes to achieve target state:")
+st.markdown("Reagent volumes needed to achieve target water property:")
 reagent_summary = {
     "Carbonate Reagent Volume": [f"{reagents['CrgtVol']:.2f} "+vol_units_label],
     "Acid Reagent Volume": [f"{reagents['ArgtVol']:.2f} "+vol_units_label]
