@@ -88,10 +88,10 @@ source_temperature = st.sidebar.number_input(
 salinity = st.sidebar.number_input(
     label="Salinity [PSU]",
     format="%.1f",
-    min_value = 0,
-    max_value = 40,
-    step = 1,
-    value=30,
+    min_value = 0.0,
+    max_value = 40.0,
+    step = 1.0,
+    value=30.0,
     key="source_salinity"
 )
 
@@ -163,7 +163,7 @@ elif target_type == "pCO2 and pH":
     )
 # define the water temperature and salinity
 target_temperature = st.sidebar.number_input(
-    label = "Water temperature[°C]",
+    label = "Water temperature [°C]",
     format="%.1f",
     min_value = -2.0,
     max_value = 38.0,
