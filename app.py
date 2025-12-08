@@ -11,6 +11,7 @@ st.markdown(
 )
 
 # ***** SIDEBAR FOR THE CALCULATION PARAMETERS *****
+st.sidebar.image("pco2-to-go-gif.gif", use_column_width=True)
 # make a title
 st.sidebar.markdown("# :blue[Starting Properties]")
 
@@ -280,3 +281,14 @@ reagent_summary = {
     "Acid Reagent Volume": [f"{reagents['ArgtVol']:.2f} "+vol_units_label]
 }
 st.dataframe(reagent_summary, hide_index=True)
+
+st.write("")
+st.write("")
+
+## ****** ADD SOME ADDITIONAL INFO ABOUT THE PROJECT HERE ******
+
+with st.expander("About this project"):
+    st.write('''
+        pCO2 to Go is a sensor system that fits in the palm of a hand and provides instant readouts of the amount of dissolved carbon dioxide in seawater (pCO2).
+    ''')
+    st.image("pCO2toGo.jpg")
