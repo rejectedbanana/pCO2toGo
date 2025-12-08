@@ -57,8 +57,14 @@ def manipulator(
     # calculate ArgtVol
     ArgtVol = FAnum/FAden*Buffered_volume
 
+    if ArgtVol < 0:
+        ArgtVol = 0
+
     # Calcuate Crgt
     CrgtVol = gamma*Buffered_volume + 16*alpha*FAnum/FAden
+
+    if CrgtVol < 0:
+        CrgtVol = 0
 
     return {
         'CrgtVol': CrgtVol,
@@ -341,8 +347,6 @@ def calculate_carbonate_chemistry_pCO2_OmegaA(
     K2 = calculate_K2(salinity, temperature)
     Kb = calculate_Kb(salinity, temperature)
     Kw = calculate_Kw(salinity, temperature)
-    # Kb12 = calculate_Kb12(Kb, K1, K2)
-    # Kw12 = calculate_Kw12(Kw, K1, K2)
 
     # CALCULATE ANCILLIARY CONSTANTS
     # density = seawater_density(salinity, temperature)
@@ -379,17 +383,87 @@ def calculate_carbonate_chemistry_pCO2_OmegaA(
         'salinity': salinity
     }
 
+def calculate_carbonate_chemistry_pCO2_pH(
+    temperature: float,
+    salinity: float, 
+    pCO2: float,
+    pH: float
+) -> Dict[str, float]:
+    """
+    Calculate carbonate chemistry parameters from pCO2 and TCO2/DIC.
+    
+    Args:
+        temperature: Temperature in degrees Celsius
+        salinity: Salinity in PSU
+        pCO2: Partial pressure of CO2 in microatm
+        pH: pH (dimensionless)
+        
+    Returns:
+        Dictionary containing:
+        - CO3: Carbonate ion concentration in umol/kg
+        - HCO3: Bicarbonate ion concentration in umol/kg
+        - CO2aq: Aqueous CO2 concentration in umol/kg
+        - pCO2: Partial pressure of CO2 in microatm 
+        - pH: pH (dimensionless)
+        - Omega_aragonite: Aragonite saturation state (dimensionless)
+        - Omega_calcite: Calcite saturation state (dimensionless)
+        - alkalinity: Total alkalinity in umol/kg
+        - tCO2: Total dissolved inorganic carbon in umol/kg
+        
+    Raises:
+        ValueError: If the polynomial solver fails to find valid roots
+    """
+
+    ### CALCULATE THE CONSTANTS ###
+    # Thermodynamic constants (equilibrium constants)
+    Kca = calculate_Kca(salinity, temperature)
+    Kar = calculate_Kar(salinity, temperature)
+    Kh = calculate_Kh(salinity, temperature)
+    K1 = calculate_K1(salinity, temperature)
+    K2 = calculate_K2(salinity, temperature)
+    Kb = calculate_Kb(salinity, temperature)
+    Kw = calculate_Kw(salinity, temperature)
+
+    # CALCULATE ANCILLIARY CONSTANTS
+    density = seawater_density(salinity, temperature)
+    calcium = calculate_calcium(salinity) # preliminary calculation used for all cases
+    CO2aq = Kh*pCO2
+    Hplus = 10**(-1*pH)
+    total_boron = calculate_total_boron(salinity) # preliminary calculation used for all cases
+    
+    # carbonate chemistry calculations
+    CO3 = CO2aq*(K1*K2/(Hplus**2))
+    HCO3 = CO2aq*K1/Hplus
+    omega_aragonite = (CO3*calcium*1000)/(Kar*1e12)
+    omega_calcite = (CO3*calcium*1000)/(Kca*1e12)
+    alkalinity = HCO3 + 2*CO3 + Kw/Hplus - Hplus + (total_boron*Kb)/(Hplus + Kb)
+    tCO2 = CO2aq + HCO3 + CO3
+    
+    return {
+        'CO3': CO3,
+        'HCO3': HCO3,
+        'CO2aq': CO2aq,
+        'pCO2': pCO2,
+        'pH': pH,
+        'Omega_aragonite': omega_aragonite,
+        'Omega_calcite': omega_calcite,
+        'alkalinity': alkalinity,
+        'tCO2': tCO2,
+        'temperature': temperature,
+        'salinity': salinity
+    }
+
 def print_calculation_summary( result: Dict[str, float] ):
     # print(f"*** {calculation_pair} SUMMARY ***")
-    print(f"CO3 = {result["CO3"]:0.0f} [umol/kg]")
-    print(f"HCO3 = {result["HCO3"]:0.0f} [umol/kg]")
-    print(f"CO2aq = {result["CO2aq"]:0.0f} [umol/kg]")
+    print(f"CO3 = {result["CO3"]:0.5f} [umol/kg]")
+    print(f"HCO3 = {result["HCO3"]:0.3f} [umol/kg]")
+    print(f"CO2aq = {result["CO2aq"]:0.4f} [umol/kg]")
     print(f"pCO2 = {result["pCO2"]:0.0f} [uatm]")
     print(f"pH = {result["pH"]:0.1f}")
-    print(f"Omega A = {result["Omega_aragonite"]:0.1f}")
-    print(f"Omega C = {result["Omega_calcite"]:0.1f}")
-    print(f"Alkalinity = {result["alkalinity"]:0.0f} [umol/kg]")
-    print(f"tCO2 = {result["tCO2"]:0.0f} [umol/kg]")
+    print(f"Omega A = {result["Omega_aragonite"]:0.7f}")
+    print(f"Omega C = {result["Omega_calcite"]:0.7f}")
+    print(f"Alkalinity = {result["alkalinity"]:0.3f} [umol/kg]")
+    print(f"TCO2 = {result["tCO2"]:0.3f} [umol/kg]")
 
 
 # ****** CALCULATE THERMODYNAMIC CONSTANTS ******
