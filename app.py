@@ -221,7 +221,7 @@ carbonate_reagent_alkalinity = st.sidebar.number_input(
 )
 carbonate_reagent_TCO2 = st.sidebar.number_input(
     "Carbonate Reagent tCO\u2082/DIC  [µmol/kg]",
-    value=20000,
+    value=200000,
     format="%.2e",
     step = 1000,
     key="CRgt_TCO2"
