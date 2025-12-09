@@ -57,11 +57,11 @@ def manipulator(
     # calculate ArgtVol
     ArgtVol = FAnum/FAden*Buffered_volume
 
+    # Calcuate Crgt
+    CrgtVol = gamma*Buffered_volume + alpha*ArgtVol
+
     if ArgtVol < 0:
         ArgtVol = 0
-
-    # Calcuate Crgt
-    CrgtVol = gamma*Buffered_volume + 16*alpha*FAnum/FAden
 
     if CrgtVol < 0:
         CrgtVol = 0
