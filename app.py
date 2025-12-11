@@ -10,7 +10,28 @@ st.markdown(
     """
 )
 
+# ******************************************
+# ****** INPUT PROPERTIES DEFAULTS *********
+# ******************************************
+defaults = {
+    "source_pCO2": 400,
+    "source_alkalinity": 2300,
+    "source_tCO2": 2000,
+    "source_pH": 7.0,
+    "source_temperature": 25.0,
+    "salinity": 30.0,
+    "target_pCO2": 400,
+    "target_OmegaAragonite": 4,
+    "target_pH": 8.1,
+    "buffer_volume": 16.0,
+    "carbonate_reagent_alkalinity": 3.3e5,
+    "carbonate_reagent_TCO2": 2.0e5,
+    "acid_reagent_HCL": 1.0e5,
+}
+
+# ******************************************
 # ***** SIDEBAR FOR THE CALCULATION PARAMETERS *****
+# ******************************************
 st.sidebar.image("pco2-to-go-gif.gif", use_column_width=True)
 # make a title
 st.sidebar.markdown("# :blue[Starting Properties]")
@@ -32,7 +53,7 @@ source_pCO2 = st.sidebar.number_input(
         min_value = 100,
         max_value = 2000,
         step = 10,
-        value = 400,
+        value = defaults['source_pCO2'],
         key="source_pCO2",
 )
 # define alkalinity, pH, or tCO2 depending on the calculation type
@@ -42,7 +63,7 @@ if input_type == "pCO2 and Alkalinity":
         min_value = 400,
         max_value = 4000,
         step = 10,
-        value=2300,
+        value = defaults['source_alkalinity'],
         key="source_alkalinity"
     )
 elif input_type == "pCO2 and Total CO2/DIC":
@@ -51,7 +72,7 @@ elif input_type == "pCO2 and Total CO2/DIC":
         min_value = 20,
         max_value = 5000,
         step = 10,
-        value=2000,
+        value = defaults['source_tCO2'],
         key="source_tCO2"
     )
 elif input_type == "pCO2 and pH":
@@ -60,27 +81,27 @@ elif input_type == "pCO2 and pH":
         min_value = 6.0,
         max_value = 9.0,
         step = 0.1,
-        value= 7.0,
+        value= defaults['source_pH'],
         key="source_pH"
     )
 # define the water temperature and salinity
 source_temperature = st.sidebar.number_input(
     label = "Water temperature [°C]",
-    format="%.1f",
+    format = "%.1f",
     min_value = -2.0,
     max_value = 38.0,
     step = 1.0,
-    value=25.0, 
+    value = defaults['source_temperature'], 
     key="source_temperature"
 )
 salinity = st.sidebar.number_input(
-    label="Salinity [PSU]",
-    format="%.1f",
+    label = "Salinity [PSU]",
+    format ="%.1f",
     min_value = 0.0,
     max_value = 40.0,
     step = 1.0,
-    value=30.0,
-    key="source_salinity"
+    value = defaults['salinity'],
+    key ="source_salinity"
 )
 
 ## Perform calculations based on selected type
@@ -106,7 +127,10 @@ elif input_type == "pCO2 and pH":
         source_pH
     )
 
-# *** TARGET WATER *****
+
+# ******************************************
+# ***** SIDEBAR FOR THE TARGET WATER *****
+# ******************************************
 # Input the target parameters
 # This is Omega Aragonite or pH
 st.sidebar.markdown("# :orange[Target Properties]")
@@ -127,7 +151,7 @@ target_pCO2 = st.sidebar.number_input(
         min_value = 100,
         max_value = 2000,
         step = 10,
-        value = 400,
+        value = defaults['target_pCO2'],
         key="target_pCO2",
 )
 # define target omega aragonite or pH depending on the calculation type
@@ -137,7 +161,7 @@ if target_type == "pCO2 and Ω aragonite":
         min_value = 0,
         max_value = 4,
         step = 1, 
-        value= 4,
+        value= defaults['target_OmegaAragonite'],
         key="target_OmegaAragonite"
     )
 elif target_type == "pCO2 and pH":
@@ -146,7 +170,7 @@ elif target_type == "pCO2 and pH":
         min_value = 6.0,
         max_value = 9.0,
         step = 0.1,
-        value= 8.1,
+        value= defaults['target_pH'],
         key="target_pH"
     )
 # define the water temperature and salinity
@@ -177,9 +201,10 @@ elif target_type == "pCO2 and pH":
         target_pH
 )
     
-    
-
+# ******************************************
 # ****** SIDEBAR FOR THE REAGENT PARAMETERS *****
+# ******************************************
+
 # select the volume units
 st.sidebar.markdown("### Reagent Properties and Target Volumes")
 
@@ -200,7 +225,7 @@ buffer_volume_label = "Target System/Tank Volume  [" + vol_units_label + "]"
 
 buffer_volume = st.sidebar.number_input(
     buffer_volume_label,
-    value=16.0, 
+    value=defaults['buffer_volume'], 
     key="Buffered_volume"
 )
 
@@ -214,26 +239,37 @@ elif volume_units == "Cubic Meters":
 # select the reagent properties
 carbonate_reagent_alkalinity = st.sidebar.number_input(
     "Carbonate Reagent Alkalinity  [µmol/kg]",
-    value=330000,
+    value=defaults['carbonate_reagent_alkalinity'],
     format="%.2e",
-    step = 1000,
+    min_value = 1.0e4,
+    max_value = 5.0e5,
+    step = 1.0e4,
     key="CRgt_Alk"
 )
 carbonate_reagent_TCO2 = st.sidebar.number_input(
     "Carbonate Reagent tCO\u2082/DIC  [µmol/kg]",
-    value=200000,
+    value=defaults['carbonate_reagent_TCO2'],
     format="%.2e",
-    step = 1000,
+    min_value = 1.0e4,
+    max_value = 5.0e5,
+    step = 1e4,
     key="CRgt_TCO2"
 )
 acid_reagent_HCL = st.sidebar.number_input(
     "Acid Reagent Concentration  [µmol/kg]",
-    value=100000,
+    value=defaults['acid_reagent_HCL'],
     format="%.2e",
-    step = 1000,
+    min_value = 1.0e4,
+    max_value = 5.0e5,
+    step = 1e4,
     key="Argt_HCL"
 )
 
+# Reset button at bottom of sidebar
+# st.sidebar.markdown("---")
+# if st.sidebar.button("Reset All Values", type="secondary", use_container_width=True):
+    # Button that resets the values
+    # salinity = 10
 
 # calculate the required reagent volumes
 reagents = cc.manipulator(
@@ -247,7 +283,9 @@ reagents = cc.manipulator(
     Buffered_volume=buffer_volume
 )
 
+# ******************************************
 # ***** DISPLAY RESULTS *****
+# ******************************************
 
 # Display the starting water summary
 st.subheader(":blue[Starting Water Property Summary]")
@@ -285,10 +323,14 @@ st.dataframe(reagent_summary, hide_index=True)
 st.write("")
 st.write("")
 
+# ******************************************
 ## ****** ADD SOME ADDITIONAL INFO ABOUT THE PROJECT HERE ******
+# ******************************************
 
 with st.expander("About this project"):
     st.write('''
         pCO2 to Go is a sensor system that fits in the palm of a hand and provides instant readouts of the amount of dissolved carbon dioxide in seawater (pCO2).
     ''')
     st.image("pCO2toGo.jpg")
+
+
