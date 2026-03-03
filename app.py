@@ -1,12 +1,20 @@
 import streamlit as st
+import pandas as pd
 import carbonate_chemistry as cc
+
+st.set_page_config(initial_sidebar_state="expanded")
+
 
 # Set up the Streamlit app
 st.title("pCO\u2082 to Go Calculator")
 st.markdown(
     """
-    This application calculates the required reagent to achieve a target 
-    state based on the initial state of the water in the tank.
+    This application calculates the required reagent volumes to achieve a 
+    stable, suitable aragonite saturation state based on the initial state 
+    of the water in recirculating tanks. Enter starting and target conditions 
+    on the left (click the double arrows at the top left to open, if needed), 
+    and view results on the right.”
+
     """
 )
 
@@ -32,7 +40,7 @@ defaults = {
 # ******************************************
 # ***** SIDEBAR FOR THE CALCULATION PARAMETERS *****
 # ******************************************
-st.sidebar.image("pco2-to-go-gif.gif", use_column_width=True)
+st.sidebar.image("pco2-to-go-gif.gif", width="stretch")
 # make a title
 st.sidebar.markdown("# :blue[Starting Properties]")
 
@@ -128,9 +136,10 @@ elif input_type == "pCO2 and pH":
     )
 
 
-# ******************************************
+# ****************************************
 # ***** SIDEBAR FOR THE TARGET WATER *****
-# ******************************************
+# ****************************************
+
 # Input the target parameters
 # This is Omega Aragonite or pH
 st.sidebar.markdown("# :orange[Target Properties]")
@@ -201,9 +210,9 @@ elif target_type == "pCO2 and pH":
         target_pH
 )
     
-# ******************************************
+# ***********************************************
 # ****** SIDEBAR FOR THE REAGENT PARAMETERS *****
-# ******************************************
+# ***********************************************
 
 # select the volume units
 st.sidebar.markdown("### Reagent Properties and Target Volumes")
@@ -290,15 +299,29 @@ reagents = cc.manipulator(
 # Display the starting water summary
 st.subheader(":blue[Starting Water Property Summary]")
 st.markdown("Properties of the starting water before adding reagents:")
-
-starting_summary =  {
+target_summary =  {
     "pCO2": [f"{source['pCO2']:.0f} µatm"],
     "pH": [f"{source['pH']:.1f}"],
     "Alkalinity": [f"{source['alkalinity']:.0f} µmol/kg"],
     "Total CO2 (DIC)": [f"{source['tCO2']:.0f} µmol/kg"],
     "Ω aragonite": [f"{source['Omega_aragonite']:.0f}"]
 }
-st.dataframe(starting_summary, hide_index=True)
+st.dataframe(target_summary, hide_index=True)
+
+# starting_summary =  {
+#     "pCO2": [f"{source['pCO2']:.0f} µatm"],
+#     "pH": [f"{source['pH']:.1f}"],
+#     "Alkalinity": [f"{source['alkalinity']:.0f} µmol/kg"],
+#     "Total CO2 (DIC)": [f"{source['tCO2']:.0f} µmol/kg"],
+#     "Ω aragonite": [f"{source['Omega_aragonite']:.0f}"]
+# }
+
+# start_df = pd.DataFrame(starting_summary)
+# styled_target = start_df.style.set_table_styles([
+#     {'selector': 'thead th', 'props': [('background-color', '#FFA500'), ('color', 'blue')]}
+# ]).hide()
+# # st.table(styled_target)
+# st.table(styled_target, border="horizontal")
 
 # Display the target water summary
 st.subheader(":orange[Target Water Property Summary]")
@@ -323,14 +346,18 @@ st.dataframe(reagent_summary, hide_index=True)
 st.write("")
 st.write("")
 
-# ******************************************
+# **************************************************************
 ## ****** ADD SOME ADDITIONAL INFO ABOUT THE PROJECT HERE ******
-# ******************************************
+# **************************************************************
 
 with st.expander("About this project"):
     st.write('''
-        pCO2 to Go is a sensor system that fits in the palm of a hand and provides instant readouts of the amount of dissolved carbon dioxide in seawater (pCO2).
+        Learn more about the **pCO2 to Go** [here](https://oceanfdn.org/equipping-scientists-and-communities/#pco2)
     ''')
-    st.image("pCO2toGo.jpg")
 
+with st.expander("Ackknowledgements"):
+    st.write('''
+        Dr. Burke Hales developed the calculation approach and reagent recipes, as well as co-developed the pCO2 to Go with The Ocean Foundation. Dr. Kim Martini translated the tools into a user-friendly webpage. The Ocean Foundation supported the development of these tools with generous funding from the Government Offices of Sweden.
+
+    ''')
 
